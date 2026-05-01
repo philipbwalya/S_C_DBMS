@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>car rental</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo"> CT's CAR RENTAL </div>
+
+        <div class="search-bar"></div>
+
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+
+        <nav class="top-nav" id="navbar">
+            <a href="#">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="location.html">Location</a>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <section class="car-listings" id="carContainer">
+            <!-- Cars will be loaded here dynamically -->
+            <p id="loading-msg" style="text-align:center; padding: 20px;">Loading cars...</p>
+        </section>
+
+        <div class="foot-title">
+            <div class="logo"> CT's CAR RENTAL </div>
+        </div>
+        <div class="footer">
+            <div class="one">
+                <p>Online Security</p>
+                <p>Accessbility</p>
+                <p>Privacy Policy</p>
+                <p>Terms and Conditions</p>
+            </div>
+            <div class="two">
+                <a href="#">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="location.html">Location</a>
+            </div>
+            <div class="three">
+                <div class="social-media">
+                    <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-square"></i></a>
+                    <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter-square"></i></a>
+                    <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram-square"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle navbar on mobile
+        const menuToggle = document.getElementById("menu-toggle");
+        const navbar = document.getElementById("navbar");
+        menuToggle.addEventListener("click", function () {
+            navbar.classList.toggle("active");
+        });
+
+        // Fetch cars from backend and render cards
+        const container = document.getElementById("carContainer");
+
+        fetch("./backend/get_cars.php")
+            .then(res => res.json())
+            .then(cars => {
+                // Remove loading message
+                document.getElementById("loading-msg").remove();
+
+                if (cars.length === 0) {
+                    container.innerHTML = "<p style='text-align:center'>No cars available at the moment.</p>";
+                    return;
+                }
+
+                cars.forEach(car => {
+                    const card = `
+                        <div class="car-card">
+                            <a href="billing.html?id=${car.id}">
+                                <img src="${car.image_url}" alt="${car.name}">
+                                <h3>${car.name}</h3>
+                                <p class="location"><i class="fas fa-map-marker-alt"></i> ${car.location}</p>
+                                <p class="price"><i class="fas fa-dollar-sign"></i> ${car.price_per_day} ZMW / Day</p>
+                            </a>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            })
+            .catch(err => {
+                container.innerHTML = "<p style='text-align:center; color:red;'>Failed to load cars. Please try again.</p>";
+                console.error("Error fetching cars:", err);
+            });
+    </script>
+
+</body>
+</html>

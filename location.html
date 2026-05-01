@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">CT's Car Rental</div>
+
+        <!-- SEARCH BAR (centered) -->
+        <div class="search-bar">
+            
+        </div>
+
+        <!-- TOGGLE BUTTON -->
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+
+        <!-- TOP NAVBAR -->
+        <nav class="top-nav" id="navbar">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="location.html">Location</a>
+        </nav>
+    </header>
+
+    <!-- ABOUT SECTION -->
+    <main>
+        <section class="about">
+            <h2>Find Us</h2>
+            <p>At Levy juction up stairs next to Zanco bank shop numbber 911.</p>
+            <div class="google-map">
+                <iframe src="https://search-zambia.com/listing/levy-junction-shopping-mall/"
+                        width="600" height="450" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+            </div>
+
+            <!-- Social Media Links -->
+        </section>
+    </main>
+
+    <script>
+        // Toggle navbar visibility on mobile screens
+        const menuToggle = document.getElementById("menu-toggle");
+        const navbar = document.getElementById("navbar");//AIzaSyCOprUvTTL9-zfbeP6QKmUAIu_r0iUIrFY
+
+        menuToggle.addEventListener("click", function() {
+            navbar.classList.toggle("active");
+        });
+    </script>
+
+</body>
+</html>

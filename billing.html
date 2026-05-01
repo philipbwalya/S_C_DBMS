@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Car Rental - Billing</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+      }
+
+      .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background: #222;
+        color: #fff;
+      }
+
+      .navbar .logo h2 {
+        margin: 0;
+        color: #fff;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        padding: 30px;
+        gap: 30px;
+      }
+
+      .billing-form {
+        flex: 2;
+        background: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .billing-form h2 {
+        margin-bottom: 20px;
+        font-size: 22px;
+        color: #333;
+      }
+
+      .billing-form label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .billing-form input,
+      .billing-form select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+      }
+
+      .billing-form button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: #222;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .billing-form button:hover {
+        background: #444;
+      }
+
+      .summary {
+        flex: 1;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+      }
+
+      .summary h3 {
+        margin-bottom: 15px;
+        font-size: 20px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+      }
+
+      .summary p {
+        margin: 8px 0;
+        color: #555;
+      }
+
+      @media (max-width: 900px) {
+        .container {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="logo"><h2>CT's CAR RENTAL</h2></div>
+    </div>
+
+    <div class="container">
+      <div class="billing-form">
+        <h2>Billing Information</h2>
+
+        <label for="name">Full Name</label>
+        <input
+          type="text"
+          id="name"
+          required
+          placeholder="Enter your full name"
+        />
+
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          required
+          placeholder="example@email.com"
+        />
+
+        <label for="license_number">Driver License Number</label>
+        <input
+          type="text"
+          id="license_number"
+          required
+          placeholder="Enter license number"
+        />
+
+        <label for="phone">Phone</label>
+        <input
+          type="tel"
+          id="phone"
+          required
+          placeholder="Enter phone number"
+        />
+
+        <label for="rental_duration_days">Rental Duration (Days)</label>
+        <input
+          type="number"
+          id="rental_duration_days"
+          required
+          min="1"
+          value="1"
+        />
+
+        <label for="payment">Payment Method</label>
+        <select id="payment" required>
+          <option value="">Select Payment Method</option>
+          <option value="MTN">MTN</option>
+          <option value="Airtel">Airtel</option>
+          <option value="Zamtel">Zamtel</option>
+        </select>
+
+        <button type="button" id="submitBtn">Confirm Booking</button>
+      </div>
+
+      <!-- SUMMARY CARD -->
+      <div class="summary">
+        <h3>Booking Summary</h3>
+        <p><strong>Car:</strong> <span id="summary-car">Loading...</span></p>
+        <p>
+          <strong>Price per Day:</strong> K<span id="summary-price">--</span>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Get the car ID from the URL e.g billing.html?id=2
+      const params = new URLSearchParams(window.location.search);
+      const carId = params.get("id");
+
+      let carName = "";
+      let pricePerDay = 0;
+
+      // Fetch cars and find the one matching our ID
+      fetch("./backend/get_cars.php")
+        .then((res) => res.json())
+        .then((cars) => {
+          const car = cars.find((c) => c.id == carId);
+
+          if (car) {
+            carName = car.name;
+            pricePerDay = car.price_per_day;
+
+            document.getElementById("summary-car").textContent = car.name;
+            document.getElementById("summary-price").textContent =
+              car.price_per_day;
+          }
+        });
+
+      // When button is clicked, collect fields and log to console
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", function () {
+          const car_id = carId;
+          const car_name = carName;
+          const customer_name = document.getElementById("name").value;
+          const customer_email = document.getElementById("email").value;
+          const license_number =
+            document.getElementById("license_number").value;
+          const phone = document.getElementById("phone").value;
+          const rental_duration_days = document.getElementById(
+            "rental_duration_days",
+          ).value;
+          const payment_method = document.getElementById("payment").value;
+
+          if (
+            (!car_id,
+            !customer_name,
+            !customer_email,
+            !license_number,
+            !phone,
+            !rental_duration_days,
+            !payment_method)
+          ) {
+            alert("Please fill in all fields!");
+          }
+
+          // Send the data to submit_booking.php
+          const formData = new FormData();
+          formData.append("car_id", carId);
+          formData.append("customer_name", customer_name);
+          formData.append("customer_email", customer_email);
+          formData.append("license_number", license_number);
+          formData.append("phone", phone);
+          formData.append("rental_duration_days", rental_duration_days);
+          formData.append("payment_method", payment_method);
+          formData.append("total_price", pricePerDay * rental_duration_days);
+
+          fetch("./backend/submit_booking.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((response) => {
+              alert(response.message);
+              if (response.status === "success")
+                window.location.href = "index.html";
+            });
+        });
+    </script>
+  </body>
+</html>

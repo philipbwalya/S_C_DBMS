@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="logo">CT's Car Rental</div>
+
+      <!-- SEARCH BAR (centered) -->
+      <div class="search-bar"></div>
+
+      <!-- TOGGLE BUTTON -->
+      <button class="menu-toggle" id="menu-toggle">☰</button>
+
+      <!-- TOP NAVBAR -->
+      <nav class="top-nav" id="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="location.html">Location</a>
+      </nav>
+    </header>
+
+    <!-- CONTACT FORM SECTION -->
+    <main>
+      <section class="contact-form">
+        <h2>Contact Us</h2>
+        <p>If you have any questions, feel free to get in touch with us!</p>
+
+        <form action="#" method="POST" id="contact-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              placeholder="Enter your message"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="send-button">Send</button>
+          <p>CONTACT US ON +260 978 143 624</p>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      // Toggle navbar visibility on mobile screens
+      const menuToggle = document.getElementById("menu-toggle");
+      const navbar = document.getElementById("navbar");
+
+      menuToggle.addEventListener("click", function () {
+        navbar.classList.toggle("active");
+      });
+
+      //   submit button
+      document
+        .getElementById("contact-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // stop the page from reloading
+
+          const email = document.getElementById("email").value;
+          const message = document.getElementById("message").value;
+
+          const formData = new FormData();
+          formData.append("email", email);
+          formData.append("message", message);
+
+          fetch("./backend/contact.php", { method: "POST", body: formData })
+            .then((res) => res.json())
+            .then((response) => {
+              alert(response.message);
+              if (response.status === "success")
+                document.getElementById("contact-form").reset();
+            });
+        });
+    </script>
+  </body>
+</html>
