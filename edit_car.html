@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Car | Car Rental</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        .top-bar {
+            background: #e74c3c;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { font-size: 20px; }
+        .top-bar button {
+            background: white;
+            color: #e74c3c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 32px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 24px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: #e74c3c;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-save {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .btn-save:hover { background: #c0392b; }
+
+        .btn-cancel {
+            background: #bdc3c7;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .btn-cancel:hover { background: #95a5a6; }
+
+        #message {
+            margin-top: 16px;
+            font-size: 14px;
+            color: green;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <h1>Car Rental — Edit Car</h1>
+    <button id="logoutBtn">Logout</button>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>Edit Car Details</h2>
+
+        <div class="form-group">
+            <label for="carName">Car Name</label>
+            <input type="text" id="carName" placeholder="e.g. Toyota Corolla">
+        </div>
+
+        <div class="form-group">
+            <label for="carLocation">Location</label>
+            <input type="text" id="carLocation" placeholder="e.g. Lusaka">
+        </div>
+
+        <div class="form-group">
+            <label for="carPrice">Price Per Day (ZMW)</label>
+            <input type="number" id="carPrice" placeholder="e.g. 350">
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-save" onclick="saveCar()">Save Changes</button>
+            <button class="btn-cancel" onclick="window.location.href='carmanagement.html'">Cancel</button>
+        </div>
+
+        <p id="message">Car updated successfully!</p>
+    </div>
+</div>
+
+<script>
+    // ── Session Check ──────────────────────────────────────────
+    fetch("./backend/check_session.php")
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== "success") {
+                alert("Please login first.");
+                window.location.href = "login.html";
+            }
+        });
+
+    // ── Logout ─────────────────────────────────────────────────
+    document.getElementById("logoutBtn").addEventListener("click", function () {
+        fetch("./backend/logout.php")
+            .then(() => window.location.href = "login.html");
+    });
+
+    // ── Get car ID from URL ────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const carId = params.get("id");
+
+    // ── Load Car Data ──────────────────────────────────────────
+    fetch(`./backend/get_car.php?id=${carId}`)
+        .then(res => res.json())
+        .then(car => {
+            if (car && car.id) {
+                document.getElementById("carName").value = car.name;
+                document.getElementById("carLocation").value = car.location;
+                document.getElementById("carPrice").value = car.price_per_day;
+            } else {
+                alert("Car not found.");
+                window.location.href = "carmanagement.html";
+            }
+        });
+
+    // ── Save Car ───────────────────────────────────────────────
+    function saveCar() {
+        const name = document.getElementById("carName").value.trim();
+        const location = document.getElementById("carLocation").value.trim();
+        const price = document.getElementById("carPrice").value.trim();
+
+        if (!name || !location || !price) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("id", carId);
+        formData.append("name", name);
+        formData.append("location", location);
+        formData.append("price_per_day", price);
+
+        fetch("./backend/update_car.php", { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(response => {
+                const msg = document.getElementById("message");
+                msg.textContent = response.message;
+                msg.style.display = "block";
+                if (response.status === "success") {
+                    setTimeout(() => window.location.href = "carmanagement.html", 1500);
+                }
+            });
+    }
+</script>
+
+</body>
+</html>

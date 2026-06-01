@@ -2,8 +2,8 @@
 // Database configuration
 $host = "localhost";
 $dbname = "car_rental";
-$username = "root";
-$password = "";
+$username = "phil";
+$password = "2019056011";
 
 // Create connection
 $conn = new mysqli($host, $username, $password, $dbname);
@@ -15,6 +15,3 @@ if ($conn->connect_error) {
 
 // Optional: Set character set to utf8
 $conn->set_charset("utf8");
-
-// Success message (for testing, comment out in production)
-// echo "Connected successfully";
